@@ -414,3 +414,9 @@ task마다 적절한 answer shape이 다릅니다
     4) dev set에서 accuracy가 가장 높은 label word 선택
 
     <img src="./assets/prune_search_ex.png">
+
+- label decomposition
+
+3) Continuous Answer Search
+
+<img src="./assets/continuous_answer.png">
