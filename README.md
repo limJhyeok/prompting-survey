@@ -420,3 +420,91 @@ task마다 적절한 answer shape이 다릅니다
 3) Continuous Answer Search
 
 <img src="./assets/continuous_answer.png">
+
+## Multi Prompt Learning
+하나의 Prompt만 LM에 전달하는 것이 아닌 여러 Prompts를 LM에 전달하여 성능을 올리는 기법
+
+### 1. Prompt Ensembling
+다수의 Prompt를 LM에 전달하는 기법입니다.
+<img src="./assets/p_ensemble.png">
+
+- 장점
+
+    1) 서로 다른 Prompts의 이점을 모두 가질 수 있습니다.
+    2) 가장 좋은 Prompt를 고르는 데에 대한 비용이 감소합니다.
+    3) Performance 안정화
+
+    각 Prompt에 대해 MASK 토큰 예측 결과가 다르므로 이 중에서 answer를 어떻게 도출할 것인지 정해야합니다.
+
+    - answer를 고르는 방법
+    1) 각 prompt 결과 평균
+        
+        $p(z|x) = \frac{1}{k}\sum_{i}^{k}p(z|f_{prompt, i}(x))$
+        $f_{prompt, i}(\cdot):$ i번째 prompt
+
+        <img src="./assets/ensemble_answer.png">
+    2) 가중 평균(Weighted Average)
+        
+        method 1 - Prompt Performance에 따라 가중치 설정하여 평균
+
+        method 2 - 가중치 학습(using train data)
+
+    3) Voting
+        Prompt결과 나온 예측 token에 대해 Voting
+
+        $Max\; LM(prompt_{1})$ = "happy"
+
+        $Max\; LM(prompt_{2})$ = "greatful"
+
+        $Max\; LM(prompt_{3})$ = "happy"
+
+        → Voting
+
+        "happy": 2 
+
+        "greatful": 1
+
+    4) Knowledge distillation
+        
+        step 1) 각기 다른 LM에 (prompt, answer) set을 통해 학습
+
+        step 2) 각기 다른 LM을 앙상블하여 label이 없는 task 예측 <br>
+            → 즉, (prompt, predict) 결과 산출
+
+        step 3) 얻어진 많은 양의 (prompt, predict)를 통해 모델 distill
+
+    5) Prompt Ensembling for text generation
+
+        다음 예측 token에 대해 ensemble 적용
+        
+### 2. Prompt Augmentation(or demonstration learning)
+task description 외에 몇 개의 예제 문제와 답안을 LM에 제공하는 기법
+<img src="./assets/prompt_aug.png">
+
+- 고려사항
+
+    1) 어떤 (예제 문제, 답안) set를 sampling할 것인지? (sample selection)
+    
+    2) sample 순서 (sample ordering)
+
+1) sample selection
+    
+    1) embedding 단에서 input과 가장 유사한 sample 탐색
+
+        e. g., 
+        
+        input: cup
+        
+        top-k similarity(cup) -> (bottle, container, ...)
+
+    2) positive sample과 negative sample 동시에 제공
+
+        e. g., 감성분석 task의 경우 긍정 감성과 부정 감성 sample 동시에 제공
+
+2) sample ordering
+    
+    skip
+
+### 3. prompt composition
+task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개어 모델 성능 향상하는 기법
+<img src="./assets/prompt_comp.png">
