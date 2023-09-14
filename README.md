@@ -8,7 +8,7 @@
 
 # 목차
 
-1. Sketch(전통적인 지도 학습 vs 프롬프트 기반 모델)
+1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
 2. Four Paradigms of NLP Progress
     - Architecture Engineering
     - Objective Engineering
@@ -25,35 +25,99 @@
 
 # 내용
 
-## 1. Sketch(전통적인 지도 학습 vs 프롬프트 기반 모델)
+## 1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
+
+0. 언어모델(LM)
+ - 언어모델: 언어에 확률을 부여하는 것
+ - 언어모델 종류
+    
+    언어모델은 주로 다음 토큰을 예측하는 Auto-Regressive LM, 빈칸을 채우는 Fill Mask LM 두가지를 얘기합니다.
+    
+    1) 다음 토큰 예측하기 - Auto-Regressive LM(e. g., GPT)
+        - input으로 주어진 text에 대해 다음 단어로 어떤 단어가 올지 예측하는 언어모델
+        - 이 때, 주어진 text에 대해서 Self Attention이 적용되므로 Context에 대한 정보가 모델에 입력됩니다.
+        <img src= './assets/ar_lm.png'>
+
+    2) 빈칸 맞추기 - Fill Mask LM(e. g., BERT)
+        - input으로 주어진 text에서 특정 자연어를 Mask 처리하여 Mask된 단어가 어떤 단어일지 예측하는 언어모델
+        - 이 때 Mask된 단어를 제외한 나머지 단어에 대해 Self Attention이 적용되므로 Context에 대한 정보가 모델에 입력됩니다.
+        - Mask 처리의 경우 일반적으로 Masked Attention 적용
+        <img src= './assets/fill_mask_lm.png'>
 
 1. Traditional Supervised learning
 
-<img src="./assets/sp_learning.png">
+**기존의 NLP task의 경우 사전학습 된 모델을 feature 추출기로 사용하고 해당 task에 맞게 fine-tuning(미세조정)하는 접근방법을 선택했습니다.**
 
-**기존의 NLP task의 경우 사전학습 된 모델을 feature 추출기로 사용하고 해당 task에 맞게 fine-tuning(미세조정)**
+<img src= './assets/pre_train.png'>
+<img src= './assets/fine_tuning.png'>
+
+```python
+# pseudo code
+
+out = BERT(x) # out.size(): (batch_size, feature_dim) 
+
+LM_Head = nn.Linear(feature_dim, n_vocab)
+# 일반적으로, LM Head의 경우 Bert의 출력인 feature를 자연어 단어(vocab) 개수의 차원을 갖는 벡터로 mapping 해주는 Linear Layer
+
+Classification_Head = nn.Linear(feature_dim, n_class)
+# 일반적으로 분류 Head의 경우 Bert의 출력인 feature를 해당 task의 class 개수(n_class)의 차원을  갖는 벡터로 mapping 해주는 Linear Layer
+```
+일례로 자연어 model hub인 Hugging Face에서 fine-tune을 위해 model을 불러올 때 다음과 같은 warning 메세지를 볼 수 있습니다.
+<img src= './assets/hf_warning.png'>
+→ 해석하자면 down-stream task에 모델을 학습하기 위해 일부 BERT의 Layer가 초기화되었다는 뜻입니다.
+- 즉, 다량의 데이터로 학습된 언어모델(LM)을 가져와 기존의 LM Head Layer를 없애고 Task에 적합한 Head Network를 초기화하여 input data X와 label Y를 fitting하는 방법이라고 볼 수 있습니다.
 
 2. Prompt-base model
+- 탄생배경
+    - Fine-tuning 없이 downstream task를 풀 수 있는 방법은 없을까?
 
-<img src="./assets/prompt_learning.png">
+    cf) Fine-tuning: down-stream task data에 대한 별도의 학습(parameter update) 과정
+- 근거
+    
+    매우 많은 Web corpora를 학습함에 따라 언어모델(LM)이 down-stream task를 Auto-Regressive 또는 Fill Mask 방식으로 학습을 했습니다.
 
-e. g., 
+- 접근 방식
 
-input: 뉴스 기사
+    기존의 Fine-tuning처럼 새로 Network를 정의하는 것이 아닌 Task를 LM Task에 적합하게 setting 해보자!
 
-Template: lambda x: f"다음 뉴스 기사 요약해줘. {x}"
+    e. g., down-stream task: 번역
 
-x': Template에 input(뉴스기사)를 적용한 자연어
+    <img src="./assets/gpt3_fs.png">
+- 용어 정리
+    - task description
+        - 해당 task가 어떤 task인지 기술하는 부분입니다. LM의 경우 Attention을 통해 input으로 주어진 데이터에 대한 Context를 이해하합니다. 따라서 task description으로 LM은 해당 task가 어떤 task인지 알 수 있게 됩니다.
+    
+    - examples(Optional)
+        - 해당 task에 대한 source data와 target data 묶음입니다. 마찬가지로 LM은 input으로 주어진 데이터에 대한 Context를 이해하므로 examples을 통해 해당 task에서 어떤 source data가 들어왔을 때 target data로 어떤 자연어가 들어가야 하는지를 알 수 있게 됩니다.
+        - examples이 없을 경우 zero-shot, 하나있을 경우 one-shot, 두개 이상일 경우 few-shot이라 부릅니다.
 
-$\hat{x}$: x’ + 요약된 뉴스 기사$
+    - prompt
+        - LM task(e. g., 다음 단어 예측, 빈칸 맞추기)에 적합한 Template(틀)에 source data를 입력하여 모델이 target data를 예측하도록 제공하는 자연어(또는 벡터)입니다.
 
-y: 요약된 뉴스 기사
+        ```python
+        # prompt 예시
+        def prompt_function(source_data):
+            prompt = f"{source_data} -> "
+            return prompt
 
-**즉, NLP task를 next token 예측(e. g., GPT) 또는 빈칸 맞추기(e. g., BERT)와 같은 언어모델(LM) task로 재정의**
+        prompt = prompt_function('cheese')
+        ```
+
+**즉, NLP task를 next token 예측(e. g., GPT) 또는 빈칸 맞추기(e. g., BERT)와 같은 언어모델(LM) task로 재정의함으로써 언어모델을 feature 추출기로 사용하는 것이 아닌 언어모델을 통해 task를 풀 수 있는 Network로 사용하게 됩니다.**
+
+- Prompt-based Learning
+    - 목적
+        - Prompt의 도움을 받아 사전 학습된 지식 최대한 활용
+    - 근거
+        - Prompt method의 경우 fine-tuning없이 downstream task를 해결하기 위한 모티프로 등장했지만 task를 재정의함에 따라 기존 언어모델(LM)을 학습시켰던 방안처럼 학습 데이터에 fitting 할 수 있게되었습니다.
+
+        - 즉 모델의 parameter를 update함으로써 언어모델을 조금 더 학습 데이터에 대해 성능이 잘 나오게 최적화할 수 있습니다.
 
 장점
 
-1) 사전학습된 언어모델(LM)을 feature 추출기로만 쓰는 것이 아니라 직접 task를 해결하기 위한 모델로 적용
+- 해당 방식의 task로 수많은 데이터를 학습했기 때문에 적은 데이터로도 좋은 성능을 가집니다.
+- 특정 task, 특정 모델에 따라 추가적인 학습 없이도 down-stream task를 해결할 수 있습니다.
+- etc
 
 ## 2. Four Paradigms of NLP Progress
 
@@ -177,7 +241,7 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
     filled prompt: $f_{fill}(x’, Z)$
 
     filled prompt함수를 통해 후보군 중에서 가장 가능성이 높은 후보($\hat{z}$) 선택
-    $$\hat{z}=search_{z \in{Z}} p(f_{fill}(x', z)) $$
+    $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
 
     여기서 가능한 $search$의 연산으로는
 
@@ -207,7 +271,7 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
     
     prompt를 이용한 LM(또는 기타 모델) 학습 방안
 
-## Prompt tenmplate engineering
+## Prompt template engineering
 
 - downstream task에 가장 효율적인 성능을 보이는 prompting 함수 $f_{prompt}(x)$를 만드는 process
 
@@ -255,7 +319,9 @@ Prompt의 형태가 정해지면 수동으로 Prompt를 생성할지, 자동으�
     
     2) continuous prompts: embedding space로 표현되는 prompt(사람이 읽기 난해함)
     
-    또한 template을 input string x에 따라 다르게 적용할 것인지에 대해서도 고려를 합니다
+3. Static / Dynamic template
+
+    template을 input string x에 따라 다르게 적용할 것인지에 대해서도 고려를 해야합니다.
     
     1) static: input string x에 상관없이 고정된 prompt template
     
@@ -296,8 +362,7 @@ Prompt의 형태가 정해지면 수동으로 Prompt를 생성할지, 자동으�
     2) LM을 이용하여 prompt에 대해 점수 채점
 
 ### 2. continuous prompts
-
-    prompt의 경우 사람이 해석하기 위함이 아니라 LM이 task를 잘 수행하도록 도와주는 보조자료이므로 자연어가 아닌 임베딩 영역의 벡터로 존재해도 상관없으며 모델입장에서도 다음 2가지 장점이 존재합니다.
+prompt의 경우 사람이 해석하기 위함이 아니라 LM이 task를 잘 수행하도록 도와주는 보조자료이므로 자연어가 아닌 임베딩 영역의 벡터로 존재해도 상관없으며 모델입장에서도 다음 2가지 장점이 존재합니다.
 
 1) template의 임베딩 영역이 자연어로 국한되지 않음
 
@@ -426,6 +491,7 @@ task마다 적절한 answer shape이 다릅니다
 
 ### 1. Prompt Ensembling
 다수의 Prompt를 LM에 전달하는 기법입니다.
+
 <img src="./assets/p_ensemble.png">
 
 - 장점
@@ -479,6 +545,11 @@ task마다 적절한 answer shape이 다릅니다
         
 ### 2. Prompt Augmentation(or demonstration learning)
 task description 외에 몇 개의 예제 문제와 답안을 LM에 제공하는 기법
+
+few-shot으로 더 많이 알려져있는 방안입니다. 
+
+cf) 저자들은 few-shot보다 Prompt Augmentation이 더욱 적합한 이름이라고 생각합니다,
+
 <img src="./assets/prompt_aug.png">
 
 - 고려사항
@@ -508,3 +579,149 @@ task description 외에 몇 개의 예제 문제와 답안을 LM에 제공하는
 ### 3. prompt composition
 task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개어 모델 성능 향상하는 기법
 <img src="./assets/prompt_comp.png">
+
+### 4. prompt decomposition
+하나의 task를 위해 여러 예측들이 선행되어야할 경우 프롬프트를 쪼개어 LM이 하나씩 해결하게 만드는 기법
+<img src="./assets/prompt_decomp.png">
+
+## Training Strategies for prompting methods
+### Training settings
+
+1. Prompt update 측면      
+
+    1) zero shot setting(Non-Param Update)
+
+    - 많은 경우 사전 학습된 LM의 Parameter update 없이 빈칸 채우기 task로 downstream task를 prompt만으로 해결이 가능합니다.
+
+    2) Param Update 
+
+    - prompt와 train data를 통해 모델을 학습하는 방법입니다
+
+        - 데이터 양 측면
+
+            full data learning: 많은 학습 데이터를 통해 model 학습
+
+            few shot learning: 적은 수의 학습 데이터로 model 학습
+
+            cf) prompt-based learning의 경우 few shot learning에 매우 유용. 
+            
+            이유: prompt를 통해 모델에게 task description을 주어 task를 해결하는 데에 도움을 줍니다.
+
+2. Parameter Update method
+
+    prompt-based learning에서 parameter는 크게
+
+    1) pre-trained LM
+    2) prompt
+
+    두가지가 존재합니다.
+
+    이에 따라, 어떤 parameter를 update할 것인지 선택하는 것은 매우 중요합니다.
+
+    이 결정은 application단에서 어떤 시나리오로 서비스를 유저에게 제공할 것인지에 따라 다를 수 있습니다.
+
+    (예를 들어, 일반적인 챗봇 APP의 경우 prompt를 update하기는 어려울 것입니다. 왜냐하면 개발자가 promopt를 지정하는 것이 아닌 user가 임의의 prompt를 제시하기 때문입니다.)
+
+    방법론
+    
+    1) pre-trained LM parameter update
+    2) prompt와 연관된 parameter 추가
+    3) prompt와 연관된 parameter 학습
+
+* Promptless Fine-tuning
+    
+    prompt없이 언어모델을 학습하는 방법입니다.
+    <img src="./assets/promptless_fine_tuning.png">
+
+    * 장점
+
+        1. prompt를 설계 및 만들 필요가 없습니다.
+        2. 단순합니다.
+        3. 학습데이터에 fit할 수 있습니다
+    
+    * 단점
+
+        1. overfit의 가능성이 있습니다.
+        2. 적은 학습 데이터에 대해 불안정하게 학습합니다.
+        3. 사전학습하며 배운 지식을 잃어버릴 수 있습니다(catastrophic forgetting)
+
+* tuning-free prompting
+
+    1. LM parameter를 update하지 않습니다.
+    2. prompt를 제시합니다
+
+    * 장점
+        
+        1. parameter update 프로세스가 존재하지 않습니다
+        2. 사전학습하며 배운 지식을 잃어버리지 않습니다
+        3. zero-shot setting에서 활용할 수 있습니다.
+
+    * 단점
+
+        1. prompt가 유일한 task에 대한 cue이므로 높은 정확도를 위해서는 많은 engineering이 필요합니다.
+        2. in-context learning setting에서 많은 예시문을 주는 것은 inference 속도를 느리게하므로 많은 수의 data를 사용할 수 없습니다.
+
+* Fixed-LM prompt tuning
+
+    1. LM parameter를 update하지 않습니다.
+    2. prompt 변수를 update 합니다(supervision signal을 이용하여)
+    
+    e. g., prefix-tuning, prompt-tuning
+
+    * 장점
+        
+        1. tuning-free prompting과 비슷한 장점 공유
+        2. Few shot 시나리오에 안정적입니다.
+        3. 종종 tuning-free보다 성능이 우수합니다.
+
+    * 단점
+        
+        1. zero-shot 시나리오에 부적합합니다.
+        2. large data setting에서 representation power가 제한되어 있습니다.
+        3. prompt update를 위한 seed prompt와 hyper parameter를 선택해야 합니다.
+        4. 최적화된 prompt가 사람이 이해하기 어렵거나 조작하기 어렵습니다.
+
+* Fixed prompt LM tuning
+    
+    1. prompt 고정
+    2. LM parameter를 update합니다.
+
+        * method 1
+            
+            가장 직관적인 방식은 discrete prompt(자연어)를 주고 LM을 train data에 대해 학습하는 것입니다.
+
+            e. g., PET-TC, PET-GEN, LM-BFF
+
+        * method 2(null prompt)
+
+            input data와 label을 바로 붙여서 학습합니다(without any template word)
+
+            따라서 [x][z]와 같은 형식으로 LM의 input으로 들어갑니다.
+
+    * 장점
+        
+        1. template 또는 answer engineering을 통해 task에 대해 상세히 명시할 수 있습니다.
+
+        2. Few shot 시나리오에 적합합니다.
+
+    * 단점
+        
+        1. template 또는 answer engineering이 여전히 필요합니다.
+        2. 다른 학습방식보다 덜 효과적일 수 있습니다.
+
+* prompt + LM tuning
+    
+    promopt와 LM의 parameter를 모두 update합니다.
+
+    e. g., PADA, p-tuning
+
+    * 장점
+
+        1. The most expressive method
+        2. 학습 데이터가 많은 경우에 적합합니다.
+
+    * 단점
+
+        1. 학습이 필요합니다.
+        2. 모델의 모든 parameter를 저장해야합니다.
+        3. 적은 데이터에 대해 overfit할 가능성이 존재합니다.
