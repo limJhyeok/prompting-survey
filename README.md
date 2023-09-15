@@ -119,15 +119,24 @@ You should probably TRAIN this model on a downstream task to be able to use it f
 - 목적
     - Prompt의 도움을 받아 사전 학습된 지식 최대한 활용
 - 근거
-    - Prompt method의 경우 fine-tuning없이 downstream task를 해결하기 위한 모티프로 등장했지만 task를 재정의함에 따라 기존 언어모델(LM)을 학습시켰던 방안처럼 학습 데이터에 fitting 할 수 있게되었습니다.
+    - Prompt method의 경우 fine-tuning없이 downstream task를 해결하기 위한 모티프로 등장했지만 downstream task를 LM task로 재정의함에 따라 기존 언어모델(LM)을 학습시켰던 방안처럼 학습 데이터에 fitting 할 수 있게되었습니다.
     
 → 즉 모델의 parameter를 update함으로써 언어모델을 조금 더 학습 데이터에 대해 성능이 잘 나오게 최적화할 수 있습니다.
 
 장점
 
 - 해당 방식(빈칸 채우기, 다음 토큰 예측 등)의 task로 수많은 데이터를 학습했기 때문에 적은 데이터로도 좋은 성능을 가집니다.
-- 특정 task, 특정 모델에 따라 추가적인 학습 없이도 downstream task를 해결할 수 있습니다.
+- 특정 task, 특정 모델에 따라 추가적인 학습 없이도(즉, labeling된 data가 없는 경우) downstream task를 해결할 수 있습니다.
+- 하나의 Model로 여러 task를 풀 수 있습니다.
 - etc
+
+마지막으로 기존 Pre-train, Fine-tune 방식과 Prompt-base 방식의 차이점을 요약하며 해당 chapter를 마무리 짓겠습니다.
+
+* **Pre-train, Fine-tune** vs **Prompt-base**
+  1. Head Layer의 초기화 유무
+  2. input data의 형식(즉, prompt 유무)
+  3. 학습 의무성(Pre-train, Fine-tune: 학습 의무적으로 필요. Prompt-base: 추가적으로 학습할지 선택 가능)
+
 
 ## 2. Four Paradigms of NLP Progress
 
