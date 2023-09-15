@@ -114,13 +114,13 @@ You should probably TRAIN this model on a downstream task to be able to use it f
 - Prompt-based Learning
 
 <img src="./assets/prompt_pipe.png">
-
-    - 목적
-        - Prompt의 도움을 받아 사전 학습된 지식 최대한 활용
-    - 근거
-        - Prompt method의 경우 fine-tuning없이 downstream task를 해결하기 위한 모티프로 등장했지만 task를 재정의함에 따라 기존 언어모델(LM)을 학습시켰던 방안처럼 학습 데이터에 fitting 할 수 있게되었습니다.
-
-        - 즉 모델의 parameter를 update함으로써 언어모델을 조금 더 학습 데이터에 대해 성능이 잘 나오게 최적화할 수 있습니다.
+    
+- 목적
+    - Prompt의 도움을 받아 사전 학습된 지식 최대한 활용
+- 근거
+    - Prompt method의 경우 fine-tuning없이 downstream task를 해결하기 위한 모티프로 등장했지만 task를 재정의함에 따라 기존 언어모델(LM)을 학습시켰던 방안처럼 학습 데이터에 fitting 할 수 있게되었습니다.
+    
+→ 즉 모델의 parameter를 update함으로써 언어모델을 조금 더 학습 데이터에 대해 성능이 잘 나오게 최적화할 수 있습니다.
 
 장점
 
@@ -231,40 +231,37 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
 - Answer search
 
 <img src="./assets/answer_engineering.png">
-    
-    정답 빈칸으로 가능한 후보군에 대한 정의를 뜻합니다.
-    
-    정답 후보군은 모든 토큰(Vocab)일 수 있고 Task에 따라 일부로 제한될 수 있습니다.
-    
-    Answer search가 필요한 이유: 기존 NLP task는 얇은 Network를 새로 정의하여 task에 맞게 mapping이 이루어져있는 반면 프롬프트 방식의 경우 사전학습된 언어모델을 그대로 이용하기 때문에 모든 토큰(Vocab)에 대해 확률이 부여되기 때문입니다.
-    
-    e. g., 후보군 Z = {”excellent”, “good”, “ok”, “bad”, “horrible”}
-    
-    여기서 후보군 Z 중에서 Label에 mapping 시켜야하는 문제가 존재합니다.
-    
-    예를 들어 기존 감정 분류 task의 경우 가능한 label이 {”Positive”, “Negative”}만 존재한다고 할 때,
-    
-    {”excellent”, “good”, “ok”} → “Positive”
-    
-    {“bad”, “horrible”} → “Negative”
-    
-    로 전환해주는 작업이 필요합니다
-    
-    따라서 Prompt를 채우는 함수는 prompt x’과 정답 후보군 Z가 필요합니다
-    
-    filled prompt: $f_{fill}(x’, Z)$
+정답 빈칸으로 가능한 후보군에 대한 정의를 뜻합니다.
 
-    filled prompt함수를 통해 후보군 중에서 가장 가능성이 높은 후보($\hat{z}$) 선택
-    $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
+정답 후보군은 모든 토큰(Vocab)일 수 있고 Task에 따라 일부로 제한될 수 있습니다.
 
-    여기서 가능한 $search$의 연산으로는
+Answer search가 필요한 이유: 기존 NLP task는 얇은 Network를 새로 정의하여 task에 맞게 mapping이 이루어져있는 반면 프롬프트 방식의 경우 사전학습된 언어모델을 그대로 이용하기 때문에 모든 토큰(Vocab)에 대해 확률이 부여되기 때문입니다.
 
-1) argmax
+e. g., 후보군 Z = {”excellent”, “good”, “ok”, “bad”, “horrible”}
 
-2) 각각 z의 확률에 따른 sampling
+여기서 후보군 Z 중에서 Label에 mapping 시켜야하는 문제가 존재합니다.
 
-3) etc
-    
+예를 들어 기존 감정 분류 task의 경우 가능한 label이 {”Positive”, “Negative”}만 존재한다고 할 때,
+
+{”excellent”, “good”, “ok”} → “Positive”
+
+{“bad”, “horrible”} → “Negative”
+
+로 전환해주는 작업이 필요합니다
+
+따라서 Prompt를 채우는 함수는 prompt x’과 정답 후보군 Z가 필요합니다
+
+filled prompt: $f_{fill}(x’, Z)$
+
+filled prompt함수를 통해 후보군 중에서 가장 가능성이 높은 후보($\hat{z}$) 선택
+$$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
+
+여기서 가능한 $search$의 연산으로는
+
+1. argmax
+2. 각각 z의 확률에 따른 sampling
+3. etc
+        
 
 ## Prompting에 대한 고려사항
 
