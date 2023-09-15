@@ -10,12 +10,13 @@
 
 1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
 2. Four Paradigms of NLP Progress
+    - Feature Engineering
     - Architecture Engineering
     - Objective Engineering
     - **Prompt Engineering**
-3. Prompting 정의 및 용어 정리
-4. 프롬프트 종류
-5. 프롬프트 디자인 고려사항
+4. Prompting 정의 및 용어 정리
+5. 프롬프트 종류
+6. 프롬프트 디자인 고려사항
     - 사전학습 모델 선택
     - Prompt Engineering
     - Answer Engineering
