@@ -537,6 +537,7 @@ task마다 적절한 answer shape이 다릅니다
         $f_{prompt, i}(\cdot):$ i번째 prompt
 
         <img src="./assets/ensemble_answer.png">
+        
     2) 가중 평균(Weighted Average)
         
         method 1 - Prompt Performance에 따라 가중치 설정하여 평균
