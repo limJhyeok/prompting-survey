@@ -80,7 +80,7 @@ You should probably TRAIN this model on a downstream task to be able to use it f
     cf) Fine-tuning: downstream task data에 대한 별도의 학습(parameter update) 과정
 - 근거
     
-    매우 많은 Web corpora를 학습함에 따라 언어모델(LM)이 downstream task를 Auto-Regressive 또는 Fill Mask 방식으로 학습을 했습니다.
+    매우 많은 Web corpora를 학습함에 따라 언어모델(LM)이 downstream task를 Auto-Regressive 또는 Fill Mask 방식으로 이미 학습을 진행한 적이 있습니다.
 
 - 접근 방식
 
@@ -89,12 +89,25 @@ You should probably TRAIN this model on a downstream task to be able to use it f
     e. g., downstream task: 번역
 
     <img src="./assets/gpt3_fs.png">
+
+    위의 그림은 [GPT3 논문](https://arxiv.org/abs/2005.14165) page 7. 에 나오는 그림입니다.
+
+    GPT3의 경우 다음 토큰 예측 언어모델, 즉 Auto-regressive LM입니다.
+
+    따라서 위의 그림에 적혀진 text를 GPT3에게 줄 경우 GPT3는 그 다음 단어들로 적합한 토큰(단어)들을 예측합니다.
+
+    그 결과, 놀랍게도 GPT3는 cheese를 프랑스어로 번역한 결과를 반환했습니다.
+
 - 용어 정리
     - task description
-        - 해당 task가 어떤 task인지 기술하는 부분입니다. LM의 경우 Attention을 통해 input으로 주어진 데이터에 대한 Context를 이해하합니다. 따라서 task description으로 LM은 해당 task가 어떤 task인지 알 수 있게 됩니다.
+        - 해당 task가 어떤 task인지 기술하는 부분입니다. 
+        
+        - LM의 경우 Attention을 통해 input으로 주어진 데이터에 대한 Context를 이해하합니다. 따라서 task description으로 LM은 해당 task가 어떤 task인지 알 수 있게 됩니다.
     
     - examples(Optional)
-        - 해당 task에 대한 source data와 target data 묶음입니다. 마찬가지로 LM은 input으로 주어진 데이터에 대한 Context를 이해하므로 examples을 통해 해당 task에서 어떤 source data가 들어왔을 때 target data로 어떤 자연어가 들어가야 하는지를 알 수 있게 됩니다.
+        - 해당 task에 대한 source data와 target data 묶음입니다.
+        
+        - 마찬가지로 LM은 input으로 주어진 데이터에 대한 Context를 이해하므로 examples을 통해 해당 task에서 어떤 source data가 들어왔을 때 target data로 어떤 자연어가 들어가야 하는지를 알 수 있게 됩니다.
         - examples이 없을 경우 zero-shot, 하나있을 경우 one-shot, 두개 이상일 경우 few-shot이라 부릅니다.
 
     - prompt
@@ -135,7 +148,7 @@ You should probably TRAIN this model on a downstream task to be able to use it f
 * **Pre-train, Fine-tune** vs **Prompt-base**
   1. Head Layer의 초기화 유무
   2. input data의 형식(즉, prompt 유무)
-  3. 학습 의무성(Pre-train, Fine-tune: 학습 의무적으로 필요. Prompt-base: 추가적으로 학습할지 선택 가능)
+  3. 학습 의무성(Pre-train, Fine-tune: 추가 학습 의무적으로 필요. Prompt-base: 추가 학습 선택 가능)
 
 
 ## 2. Four Paradigms of NLP Progress
