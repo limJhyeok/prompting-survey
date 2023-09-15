@@ -56,31 +56,36 @@
 
 out = BERT(x) # out.size(): (batch_size, feature_dim) 
 
-LM_Head = nn.Linear(feature_dim, n_vocab)
+LM_Head = nn.Linear(feature_dim, n_vocab) # LM task에 대해 수많은 Web corpora로 학습된 상태
+
 # 일반적으로, LM Head의 경우 Bert의 출력인 feature를 자연어 단어(vocab) 개수의 차원을 갖는 벡터로 mapping 해주는 Linear Layer
 
-Classification_Head = nn.Linear(feature_dim, n_class)
+Classification_Head = nn.Linear(feature_dim, n_class) # downstream task를 위해 초기화하여 train data에 학습
+
 # 일반적으로 분류 Head의 경우 Bert의 출력인 feature를 해당 task의 class 개수(n_class)의 차원을  갖는 벡터로 mapping 해주는 Linear Layer
 ```
 일례로 자연어 model hub인 Hugging Face에서 fine-tune을 위해 model을 불러올 때 다음과 같은 warning 메세지를 볼 수 있습니다.
-<img src= './assets/hf_warning.png'>
-→ 해석하자면 down-stream task에 모델을 학습하기 위해 일부 BERT의 Layer가 초기화되었다는 뜻입니다.
+```
+Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-cased and are newly initialized: ['classifier.bias', 'classifier.weight']
+You should probably TRAIN this model on a downstream task to be able to use it for predictions and inference.
+```
+→ 해석하자면 downstream task에 모델을 학습하기 위해 일부 BERT의 Layer가 초기화되었다는 뜻입니다.
 - 즉, 다량의 데이터로 학습된 언어모델(LM)을 가져와 기존의 LM Head Layer를 없애고 Task에 적합한 Head Network를 초기화하여 input data X와 label Y를 fitting하는 방법이라고 볼 수 있습니다.
 
 2. Prompt-base model
 - 탄생배경
-    - Fine-tuning 없이 downstream task를 풀 수 있는 방법은 없을까?
+    - GPT-1 등장 이후 Fine-tuning 없이 downstream task를 풀 수 있는 방법은 없을까?에 대한 의문점에서 시작
 
-    cf) Fine-tuning: down-stream task data에 대한 별도의 학습(parameter update) 과정
+    cf) Fine-tuning: downstream task data에 대한 별도의 학습(parameter update) 과정
 - 근거
     
-    매우 많은 Web corpora를 학습함에 따라 언어모델(LM)이 down-stream task를 Auto-Regressive 또는 Fill Mask 방식으로 학습을 했습니다.
+    매우 많은 Web corpora를 학습함에 따라 언어모델(LM)이 downstream task를 Auto-Regressive 또는 Fill Mask 방식으로 학습을 했습니다.
 
 - 접근 방식
 
     기존의 Fine-tuning처럼 새로 Network를 정의하는 것이 아닌 Task를 LM Task에 적합하게 setting 해보자!
 
-    e. g., down-stream task: 번역
+    e. g., downstream task: 번역
 
     <img src="./assets/gpt3_fs.png">
 - 용어 정리
@@ -97,7 +102,8 @@ Classification_Head = nn.Linear(feature_dim, n_class)
         ```python
         # prompt 예시
         def prompt_function(source_data):
-            prompt = f"{source_data} -> "
+            template = f"{source_data} -> "
+            prompt = template
             return prompt
 
         prompt = prompt_function('cheese')
@@ -106,6 +112,9 @@ Classification_Head = nn.Linear(feature_dim, n_class)
 **즉, NLP task를 next token 예측(e. g., GPT) 또는 빈칸 맞추기(e. g., BERT)와 같은 언어모델(LM) task로 재정의함으로써 언어모델을 feature 추출기로 사용하는 것이 아닌 언어모델을 통해 task를 풀 수 있는 Network로 사용하게 됩니다.**
 
 - Prompt-based Learning
+
+<img src="./assets/prompt_pipe.png">
+
     - 목적
         - Prompt의 도움을 받아 사전 학습된 지식 최대한 활용
     - 근거
@@ -115,8 +124,8 @@ Classification_Head = nn.Linear(feature_dim, n_class)
 
 장점
 
-- 해당 방식의 task로 수많은 데이터를 학습했기 때문에 적은 데이터로도 좋은 성능을 가집니다.
-- 특정 task, 특정 모델에 따라 추가적인 학습 없이도 down-stream task를 해결할 수 있습니다.
+- 해당 방식(빈칸 채우기, 다음 토큰 예측 등)의 task로 수많은 데이터를 학습했기 때문에 적은 데이터로도 좋은 성능을 가집니다.
+- 특정 task, 특정 모델에 따라 추가적인 학습 없이도 downstream task를 해결할 수 있습니다.
 - etc
 
 ## 2. Four Paradigms of NLP Progress
@@ -192,6 +201,9 @@ Time Period: 대략 2019년 이후부터 현재까지
 1) GPT3
 
 ## Prompt 정의
+
+<img src="./assets/prompt_design.png">
+
 $f_{prompt}(\cdot)$: input string x를 prompt x'으로 변환해주는 함수
 
 - Template
@@ -217,6 +229,8 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
         e. g., [x]를 영어로 번역하시오. [z]
         
 - Answer search
+
+<img src="./assets/answer_engineering.png">
     
     정답 빈칸으로 가능한 후보군에 대한 정의를 뜻합니다.
     
@@ -254,6 +268,8 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
 
 ## Prompting에 대한 고려사항
 
+<img src="./assets/prompt_pipe.png">
+
 1. pre-trained LM choice
 2. Prompt template engineering
     
@@ -272,6 +288,8 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
     prompt를 이용한 LM(또는 기타 모델) 학습 방안
 
 ## Prompt template engineering
+
+<img src="./assets/prompt_design.png">
 
 - downstream task에 가장 효율적인 성능을 보이는 prompting 함수 $f_{prompt}(x)$를 만드는 process
 
@@ -400,10 +418,10 @@ Context x와 Target y사이를 continuous prompt가 채우게 됩니다.
 
 ## Prompt Answer Engineering
 
+<img src="./assets/answer_engineering.png">
+
 1. answer space Z 찾기
 2. Z에서 원래의 output y로 mapping하기
-
-<img src="./assets/a_space_ex.png">
 
 이를 위해
 
@@ -487,6 +505,9 @@ task마다 적절한 answer shape이 다릅니다
 <img src="./assets/continuous_answer.png">
 
 ## Multi Prompt Learning
+
+<img src="./assets/prompt_design.png">
+
 하나의 Prompt만 LM에 전달하는 것이 아닌 여러 Prompts를 LM에 전달하여 성능을 올리는 기법
 
 ### 1. Prompt Ensembling
@@ -585,8 +606,10 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
 <img src="./assets/prompt_decomp.png">
 
 ## Training Strategies for prompting methods
-### Training settings
 
+<img src="./assets/training_strategy.png">
+
+### Training settings
 1. Prompt update 측면      
 
     1) zero shot setting(Non-Param Update)
@@ -725,3 +748,29 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
         1. 학습이 필요합니다.
         2. 모델의 모든 parameter를 저장해야합니다.
         3. 적은 데이터에 대해 overfit할 가능성이 존재합니다.
+
+## Challenges
+1. 사전 학습 언어모델 선택
+    
+    각기 다른 LM에 대해 prompt-base learning의 차이를 밝힌 연구가 아직 존재하지 않습니다.
+
+2. prompt design
+
+    * 분류, 생성을 제외한 task에 대한 연구
+
+        현재까지 prompt-base learning에서 분류와 생성에서 연구가 활발히 진행되고 있습니다.
+
+        반면 information extraction, text analysis의 경우 논의가 덜 되어있습니다.
+
+        이에 대한 이유는 해당 task의 prompt가 덜 직관적이기 때문입니다.
+
+        저자는 크게 두가지로 접근할 수 있을 것으로 예상하는데
+
+        1) 분류 또는 생성문제로 재정의
+        2) 구조화된 출력값에 적합하도록 prompt answer engineering 수행
+
+    * 구조화된 정보에 대한 prompting
+
+        NLP task에서 입력값은 다양한 구조를 가질 수 있습니다(e. g., tree, graph 등)
+
+        이에 따라 구조화된 template 또는 answer enginnering을 어떻게 표현할 것인지가 문제점입니다.
