@@ -225,7 +225,7 @@ Time Period: 대략 2019년 이후부터 현재까지
 
 ## Prompt 정의
 
-<img src="./assets/prompt_design.png">
+<img src="./assets/prompt_design.png" height = 350>
 
 $f_{prompt}(\cdot)$: input string x를 prompt x'으로 변환해주는 함수
 
@@ -253,7 +253,7 @@ e. g., Template: “[x]의 품사는 무엇입니까?: [z]”
         
 - Answer search
 
-<img src="./assets/answer_engineering.png">
+<img src="./assets/answer_engineering.png" height = 350>
 정답 빈칸으로 가능한 후보군에 대한 정의를 뜻합니다.
 
 정답 후보군은 모든 토큰(Vocab)일 수 있고 Task에 따라 일부로 제한될 수 있습니다.
@@ -288,7 +288,7 @@ $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
 
 ## Prompting에 대한 고려사항
 
-<img src="./assets/prompt_pipe.png">
+<img src="./assets/prompt_pipe.png" height = 350>
 
 1. pre-trained LM choice
 2. Prompt template engineering
@@ -309,7 +309,7 @@ $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
 
 ## Prompt template engineering
 
-<img src="./assets/prompt_design.png">
+<img src="./assets/prompt_design.png" height = 350>
 
 - downstream task에 가장 효율적인 성능을 보이는 prompting 함수 $f_{prompt}(x)$를 만드는 process
 
@@ -438,7 +438,7 @@ Context x와 Target y사이를 continuous prompt가 채우게 됩니다.
 
 ## Prompt Answer Engineering
 
-<img src="./assets/answer_engineering.png">
+<img src="./assets/answer_engineering.png" height = 350>
 
 1. answer space Z 찾기
 2. Z에서 원래의 output y로 mapping하기
@@ -526,7 +526,7 @@ task마다 적절한 answer shape이 다릅니다
 
 ## Multi Prompt Learning
 
-<img src="./assets/prompt_design.png">
+<img src="./assets/prompt_design.png" height=350>
 
 하나의 Prompt만 LM에 전달하는 것이 아닌 여러 Prompts를 LM에 전달하여 성능을 올리는 기법
 
@@ -628,7 +628,7 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
 
 ## Training Strategies for prompting methods
 
-<img src="./assets/training_strategy.png">
+<img src="./assets/training_strategy.png" height = 350>
 
 ### Training settings
 1. Prompt update 측면      
