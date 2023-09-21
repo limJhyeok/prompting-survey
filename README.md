@@ -42,7 +42,6 @@
     2) 빈칸 맞추기 - Fill Mask LM(e. g., BERT)
         - input으로 주어진 text에서 특정 자연어를 Mask 처리하여 Mask된 단어가 어떤 단어일지 예측하는 언어모델
         - 이 때 Mask된 단어를 제외한 나머지 단어에 대해 Self Attention이 적용되므로 Context에 대한 정보가 모델에 입력됩니다.
-        - Mask 처리의 경우 일반적으로 Masked Attention 적용
         <img src= './assets/fill_mask_lm.png'>
 
 1. Traditional Supervised learning
