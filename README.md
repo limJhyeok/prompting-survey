@@ -7,22 +7,21 @@
 논문을 읽고 정리 및 요약한 내용입니다.
 
 ## 목차
-
-1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
-2. Four Paradigms of NLP Progress
-    - Feature Engineering
-    - Architecture Engineering
-    - Objective Engineering
-    - **Prompt Engineering**
-4. Prompting 정의 및 용어 정리
-5. 프롬프트 종류
-6. 프롬프트 디자인 고려사항
-    - 사전학습 모델 선택
-    - Prompt Engineering
-    - Answer Engineering
-    - Expanding the Paradigm
-    - 프롬프트를 통한 학습 전략
-
+1. **서론**  
+   - 전통적인 지도 학습 vs 프롬프트 기반 모델
+2. **Four Paradigms of NLP Progress**  
+   - Feature Engineering  
+   - Architecture Engineering  
+   - Objective Engineering  
+   - Prompt Engineering
+3. **Prompt 정의 및 고려사항**
+4. **Automated template learning**  
+5. **Prompt Answer Engineering**  
+6. **Multi Prompt Learning**  
+7. **Training Strategies for prompting methods**  
+8. **Application**
+9. **Prompt-Relevant topics** 
+10. **Challenges**
 
 ## 내용
 
@@ -192,7 +191,7 @@ Time Period: 대략 2013 ~ 2018년
 
 Paradigm: Pre-train, Fine-Tune
 
-Time Period: 대략 2017년 이후부터 현재까지
+Time Period: 대략 2017년 이후부터 현재(2021)까지
 
 특징:
 
@@ -208,7 +207,7 @@ Time Period: 대략 2017년 이후부터 현재까지
 
 Paradigm: Pre-train, Prompt, Predict
 
-Time Period: 대략 2019년 이후부터 현재까지
+Time Period: 대략 2019년 이후부터 현재(2021)까지
 
 특징:
 
@@ -364,7 +363,7 @@ Prompt의 형태가 정해지면 수동으로 Prompt를 생성할지, 자동으�
     
     2) dynamic: input string x에 따라 변하는 prompt template
 
-### Automated template learning
+### 4. Automated template learning
 
 #### 1. discrete prompts
 
@@ -435,7 +434,7 @@ discrete prompt의 경우 일반적으로 자연어로 쓰인 Template T와 Cont
 
 Context x와 Target y사이를 continuous prompt가 채우게 됩니다.
 
-### Prompt Answer Engineering
+### 5. Prompt Answer Engineering
 
 <img src="./assets/answer_engineering.png" height = 350>
 
@@ -523,7 +522,7 @@ task마다 적절한 answer shape이 다릅니다
 
 <img src="./assets/continuous_answer.png">
 
-### Multi Prompt Learning
+### 6. Multi Prompt Learning
 
 <img src="./assets/prompt_design.png" height=350>
 
@@ -625,7 +624,7 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
 하나의 task를 위해 여러 예측들이 선행되어야할 경우 프롬프트를 쪼개어 LM이 하나씩 해결하게 만드는 기법
 <img src="./assets/prompt_decomp.png">
 
-### Training Strategies for prompting methods
+### 7. Training Strategies for prompting methods
 
 <img src="./assets/training_strategy.png" height = 350>
 
@@ -769,7 +768,7 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
         2. 모델의 모든 parameter를 저장해야합니다.
         3. 적은 데이터에 대해 overfit할 가능성이 존재합니다.
 
-## #Application
+### 8. Application
 이전 섹션까지 기술적인 부분에 대해서 초점을 맞췄다면
 
 해당 섹션에서는 Prompting Method의 활용 측면에 초점을 맞춥니다.
@@ -943,7 +942,7 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
     <img src="./assets/multi_modal_ex.png">
 
 
-### Prompt-Relevant topics
+### 9. Prompt-Relevant topics
 Prompt-based learning과 다른 learning과 비교 및 연결
 
 - Ensembling Learning
@@ -1029,7 +1028,7 @@ Prompt-based learning과 다른 learning과 비교 및 연결
         
         몇가지 단서를 이용하여 salient information 추출
 
-### Challenges
+### 10. Challenges
 1. 사전 학습 언어모델 선택
     
     각기 다른 LM에 대해 prompt-base learning의 차이를 밝힌 연구가 아직 존재하지 않습니다.
