@@ -1,12 +1,12 @@
-# Note
+# Overview
 
-[ACM Computing Surveys, Vol. 55, No. 9, Article 195. Publication date: January 2023](https://dl.acm.org/doi/full/10.1145/3560815)
+이 문서는 
 
-논문 제목: Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing
+[Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing](https://dl.acm.org/doi/full/10.1145/3560815)
 
-을 읽고 정리 및 요약한 내용입니다.
+논문을 읽고 정리 및 요약한 내용입니다.
 
-# 목차
+## 목차
 
 1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
 2. Four Paradigms of NLP Progress
@@ -24,9 +24,9 @@
     - 프롬프트를 통한 학습 전략
 
 
-# 내용
+## 내용
 
-## 1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
+### 1. 서론(전통적인 지도 학습 vs 프롬프트 기반 모델)
 
 0. 언어모델(LM)
  - 언어모델: 언어에 확률을 부여하는 것
@@ -150,9 +150,9 @@ You should probably TRAIN this model on a downstream task to be able to use it f
   3. 학습 의무성(Pre-train, Fine-tune: 추가 학습 의무적으로 필요. Prompt-base: 추가 학습 선택 가능)
 
 
-## 2. Four Paradigms of NLP Progress
+### 2. Four Paradigms of NLP Progress
 
-### 1 - Feature Engineering
+#### 1 - Feature Engineering
 
 Paradigm: 완전 지도 학습(인공 신경망 사용 X)
 
@@ -170,7 +170,7 @@ Time Period: 2015년 쯤에 가장 유행
 
 2) Manual features → Conditional Random Fields(CRF)
 
-### 2 - Architecture Engineering
+#### 2 - Architecture Engineering
 
 Paradigm: 지도 학습(인공신경망 이용)
 
@@ -188,7 +188,7 @@ Time Period: 대략 2013 ~ 2018년
 
 1) CNN을 이용한 Text 분류
 
-### 3 - Objective Engineering
+#### 3 - Objective Engineering
 
 Paradigm: Pre-train, Fine-Tune
 
@@ -204,7 +204,7 @@ Time Period: 대략 2017년 이후부터 현재까지
 
 1) BERT → Fine Tuning
 
-### 4 - Prompt Engineering
+#### 4 - Prompt Engineering
 
 Paradigm: Pre-train, Prompt, Predict
 
@@ -222,7 +222,7 @@ Time Period: 대략 2019년 이후부터 현재까지
 
 1) GPT3
 
-## Prompt 정의
+### 3. Prompt 정의
 
 <img src="./assets/prompt_design.png" height = 350>
 
@@ -285,7 +285,7 @@ $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
 3. etc
         
 
-## Prompting에 대한 고려사항
+#### Prompting에 대한 고려사항
 
 <img src="./assets/prompt_pipe.png" height = 350>
 
@@ -306,13 +306,13 @@ $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
     
     prompt를 이용한 LM(또는 기타 모델) 학습 방안
 
-## Prompt template engineering
+### Prompt template engineering
 
 <img src="./assets/prompt_design.png" height = 350>
 
 - downstream task에 가장 효율적인 성능을 보이는 prompting 함수 $f_{prompt}(x)$를 만드는 process
 
-### **method**
+#### **method**
 
 1) 사람이 직접 prompt template 작성
 
@@ -320,7 +320,7 @@ $$\hat{z}=search_{z \in{Z}} P(f_{fill}(x', z)) $$
 
 먼저 prompt를 생성하기 위해서는 prompt의 형태를 정해야 합니다
 
-### prompt 형태
+#### prompt 형태
 
 1) cloze prompt: 빈칸 채우기처럼 정답 빈칸이 template 사이에 존재
 
@@ -334,7 +334,7 @@ prompt의 형태는 task와 모델에 영향을 받습니다
 
 2) prefix prompt: 생성형 task 또는 auto-regressive LM(e. g., GPT)에 적합
 
-### Prompt 생성
+#### Prompt 생성
 
 Prompt의 형태가 정해지면 수동으로 Prompt를 생성할지, 자동으로 Prompt를 생성할지 정해야 합니다.
 
@@ -364,9 +364,9 @@ Prompt의 형태가 정해지면 수동으로 Prompt를 생성할지, 자동으�
     
     2) dynamic: input string x에 따라 변하는 prompt template
 
-## Automated template learning
+### Automated template learning
 
-### 1. discrete prompts
+#### 1. discrete prompts
 
 1. prompt mining
 2. prompt paraphrasing
@@ -398,7 +398,7 @@ Prompt의 형태가 정해지면 수동으로 Prompt를 생성할지, 자동으�
 
     2) LM을 이용하여 prompt에 대해 점수 채점
 
-### 2. continuous prompts
+#### 2. continuous prompts
 prompt의 경우 사람이 해석하기 위함이 아니라 LM이 task를 잘 수행하도록 도와주는 보조자료이므로 자연어가 아닌 임베딩 영역의 벡터로 존재해도 상관없으며 모델입장에서도 다음 2가지 장점이 존재합니다.
 
 1) template의 임베딩 영역이 자연어로 국한되지 않음
@@ -435,7 +435,7 @@ discrete prompt의 경우 일반적으로 자연어로 쓰인 Template T와 Cont
 
 Context x와 Target y사이를 continuous prompt가 채우게 됩니다.
 
-## Prompt Answer Engineering
+### Prompt Answer Engineering
 
 <img src="./assets/answer_engineering.png" height = 350>
 
@@ -448,7 +448,7 @@ Context x와 Target y사이를 continuous prompt가 채우게 됩니다.
 
 2) answer design method 결정
 
-### 1. Answer shape
+#### 1. Answer shape
 
 answer shape의 경우
 
@@ -464,7 +464,7 @@ task마다 적절한 answer shape이 다릅니다
 
 예를 들어, 개체명 인식(NER)의 경우 token, 언어 생성 task의 경우 sentence가 주로 적합합니다.
 
-### 2. Answer Space design methods
+#### 2. Answer Space design methods
 
 적절한 answer space Z와 이를 최종 output y로 mapping하기 위한 디자인 방법론
 
@@ -523,13 +523,13 @@ task마다 적절한 answer shape이 다릅니다
 
 <img src="./assets/continuous_answer.png">
 
-## Multi Prompt Learning
+### Multi Prompt Learning
 
 <img src="./assets/prompt_design.png" height=350>
 
 하나의 Prompt만 LM에 전달하는 것이 아닌 여러 Prompts를 LM에 전달하여 성능을 올리는 기법
 
-### 1. Prompt Ensembling
+#### 1. Prompt Ensembling
 다수의 Prompt를 LM에 전달하는 기법입니다.
 
 <img src="./assets/p_ensemble.png">
@@ -584,7 +584,7 @@ task마다 적절한 answer shape이 다릅니다
 
         다음 예측 token에 대해 ensemble 적용
         
-### 2. Prompt Augmentation(or demonstration learning)
+#### 2. Prompt Augmentation(or demonstration learning)
 task description 외에 몇 개의 예제 문제와 답안을 LM에 제공하는 기법
 
 few-shot으로 더 많이 알려져있는 방안입니다. 
@@ -617,19 +617,19 @@ cf) 저자들은 few-shot보다 Prompt Augmentation이 더욱 적합한 이름�
     
     skip
 
-### 3. prompt composition
+#### 3. prompt composition
 task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개어 모델 성능 향상하는 기법
 <img src="./assets/prompt_comp.png">
 
-### 4. prompt decomposition
+#### 4. prompt decomposition
 하나의 task를 위해 여러 예측들이 선행되어야할 경우 프롬프트를 쪼개어 LM이 하나씩 해결하게 만드는 기법
 <img src="./assets/prompt_decomp.png">
 
-## Training Strategies for prompting methods
+### Training Strategies for prompting methods
 
 <img src="./assets/training_strategy.png" height = 350>
 
-### Training settings
+#### Training settings
 1. Prompt update 측면      
 
     1) zero shot setting(Non-Param Update)
@@ -769,7 +769,7 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
         2. 모델의 모든 parameter를 저장해야합니다.
         3. 적은 데이터에 대해 overfit할 가능성이 존재합니다.
 
-## Application
+## #Application
 이전 섹션까지 기술적인 부분에 대해서 초점을 맞췄다면
 
 해당 섹션에서는 Prompting Method의 활용 측면에 초점을 맞춥니다.
@@ -943,7 +943,7 @@ task가 여러 문제로 이루어진 경우 prompt를 단일 문제로 쪼개�
     <img src="./assets/multi_modal_ex.png">
 
 
-## Prompt-Relevant topics
+### Prompt-Relevant topics
 Prompt-based learning과 다른 learning과 비교 및 연결
 
 - Ensembling Learning
@@ -1029,7 +1029,7 @@ Prompt-based learning과 다른 learning과 비교 및 연결
         
         몇가지 단서를 이용하여 salient information 추출
 
-## Challenges
+### Challenges
 1. 사전 학습 언어모델 선택
     
     각기 다른 LM에 대해 prompt-base learning의 차이를 밝힌 연구가 아직 존재하지 않습니다.
